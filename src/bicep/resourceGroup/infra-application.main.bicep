@@ -1,19 +1,17 @@
 // Deploys the infra for the application (Logic App Standard with working storage account) 
 // including RBAC roles to access the queue on the shared storage account
 
+import * as naming from './resourceNames.bicep' 
 
-// Helper param
-param resourcePrefix string = 'anmo-ds-demo-rg'
+param logicAppName string = naming.logicAppName
+param logicAppPlanName string = naming.logicAppPlanName
+param logicAppPlanSkuName string = naming.logicAppPlanSkuName
 
-param logicAppName string = '${resourcePrefix}-las'
-param logicAppPlanName string = '${resourcePrefix}-las-plan'
-param logicAppPlanSkuName string = 'WS1'
-
-param workspaceName string = '${resourcePrefix}-law'
-param appInsightsName string = '${resourcePrefix}-insights'
+param workspaceName string = naming.workspaceName
+param appInsightsName string = naming.appInsightsName
 
 // Storage account to host the queue used by the Logic App
-param storageAccountName string = toLower(replace('${resourcePrefix}-stor', '-', ''))
+param workingStorageAccountName string = naming.logicAppWorkingStorageAccountName
 
 
 param resourceTags object = {
@@ -73,7 +71,7 @@ module logicApp '../modules/logicapp-standard.bicep' = {
 
 // 3. Make sure RBAC to storage queue is set.
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
-  name: storageAccountName
+  name: workingStorageAccountName
 }
 
 // Add queue storage DATA contributor role to the logic app managed identity on the shared storage account

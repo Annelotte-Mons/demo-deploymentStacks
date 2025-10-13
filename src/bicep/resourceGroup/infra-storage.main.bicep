@@ -1,6 +1,9 @@
 // main.bicep to deploy the simulated storage infra (storage account with queue)
-param storageAccountName string
-param queueName string
+
+import * as naming from './resourceNames.bicep' 
+
+param storageAccountName string = naming.dataStorageAccountName
+param queueName string = naming.queueName
 param location string = resourceGroup().location
 
 param resourceTags object = {
@@ -19,3 +22,4 @@ module storageAccount '../modules/storage.bicep' = {
     resourceTags: resourceTags
   }
 }
+
