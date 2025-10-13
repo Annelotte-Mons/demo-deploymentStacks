@@ -1,7 +1,7 @@
 // Centralized resource naming conventions for the deployment
 // Usually this would be something more dynamic, but for demo purposes we keep it simple.
 
-var resourcePrefix string = 'anmo-ds-demo-rg'
+var resourcePrefix string = 'anmo-ds-rg'
 
 @export()
 var logicAppName string = '${resourcePrefix}-las'

@@ -31,7 +31,7 @@ var roleAssignmentMappings = {
 
 // 1. Deploy Log Analytics workspace + App Insights (linked to the LA workspace)
 module workSpaceResourceId 'br/public:avm/res/operational-insights/workspace:0.12.0' = {
-  name: 'logAnalyticsWorkspaceDeployment'
+  name: uniqueString('rg-laworkspace')
   params: {
     name: workspaceName
     location: location
@@ -40,7 +40,7 @@ module workSpaceResourceId 'br/public:avm/res/operational-insights/workspace:0.1
 }
 
 module appInsights 'br/public:avm/res/insights/component:0.6.0' = {
-  name: 'appInsightsDeployment'
+  name: uniqueString('rg-appInsightsDeployment')
   params: {
     name: appInsightsName
     location: location
@@ -55,7 +55,7 @@ module appInsights 'br/public:avm/res/insights/component:0.6.0' = {
 
 // 2. Deploy Logic App standard (no appSettings)
 module logicApp '../modules/logicapp-standard.bicep' = {
-  name: 'logicAppDeployment'
+  name: uniqueString('rg-logicAppDeployment')
   params: {
     logicAppName: logicAppName
     logicAppPlanName: logicAppPlanName
@@ -76,7 +76,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing 
 
 // Add queue storage DATA contributor role to the logic app managed identity on the shared storage account
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: 'RoleAssignmentDeployment'
+  name: guid('rg-RoleAssignmentDeployment')
   scope: storageAccount
   properties: {
     roleDefinitionId: roleAssignmentMappings['Storage Queue Data Contributor']

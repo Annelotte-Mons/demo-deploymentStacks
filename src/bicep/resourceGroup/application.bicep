@@ -18,7 +18,7 @@ param queueName string = naming.queueName
 
 
 module logicApp_AppSettings '../modules/logicapp-appsettings.bicep' = {
-  name: 'logicAppAppSettingsDeployment'
+  name: uniqueString('rg-logicAppAppSettingsDeployment')
   params: {
     logicAppName: logicAppName
     appInsightsName: appInsightsName

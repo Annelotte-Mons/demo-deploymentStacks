@@ -14,7 +14,7 @@ param resourceTags object = {
 // Deploys storage account with a queue 
 // (could be anything else like SQL, Servicebus, cosmos,... Just for demo purposes)
 module storageAccount '../modules/storage.bicep' = {
-  name: 'storageAccountDeployment'
+  name: uniqueString('rg-data-storacc')
   params: {
     storageAccountName: storageAccountName
     queueName: queueName
