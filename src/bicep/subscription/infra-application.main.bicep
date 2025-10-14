@@ -3,6 +3,9 @@
 
 import * as naming from './resourceNames.bicep'
 
+param appRgName string = naming.appRgName
+param dataRgName string = naming.dataRgName
+
 param logicAppName string = naming.logicAppName
 param logicAppPlanName string = naming.logicAppPlanName
 param logicAppPlanSkuName string = naming.logicAppPlanSkuName
@@ -19,11 +22,28 @@ param resourceTags object = {
   project: 'demo-deploymentStacks'
 }
 
-param location string = resourceGroup().location
+param location string = 'westeurope'
+
+
+targetScope = 'subscription'
+
+
+module appRg 'br/public:avm/res/resources/resource-group:0.4.1' = {
+  name: appRgName
+  params: {
+    name: appRgName
+    location: location
+    tags: resourceTags
+  }
+}
 
 // 1. Deploy Log Analytics workspace + App Insights (linked to the LA workspace)
 module workSpaceResourceId 'br/public:avm/res/operational-insights/workspace:0.12.0' = {
   name: uniqueString('rg-laworkspace')
+  scope: resourceGroup(appRgName)
+  dependsOn: [
+    appRg
+  ]
   params: {
     name: workspaceName
     location: location
@@ -33,6 +53,10 @@ module workSpaceResourceId 'br/public:avm/res/operational-insights/workspace:0.1
 
 module appInsights 'br/public:avm/res/insights/component:0.6.0' = {
   name: uniqueString('rg-appInsightsDeployment')
+  scope: resourceGroup(appRgName)
+  dependsOn: [
+    appRg
+  ]
   params: {
     name: appInsightsName
     location: location
@@ -47,6 +71,10 @@ module appInsights 'br/public:avm/res/insights/component:0.6.0' = {
 // 2. Deploy Logic App standard (no appSettings)
 module logicApp '../modules/logicapp-standard.bicep' = {
   name: uniqueString('rg-logicAppDeployment')
+  scope: resourceGroup(appRgName)
+  dependsOn: [
+    appRg
+  ]
   params: {
     logicAppName: logicAppName
     logicAppPlanName: logicAppPlanName
@@ -64,11 +92,13 @@ module logicApp '../modules/logicapp-standard.bicep' = {
 var makeMistake = false
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+  scope: makeMistake ? resourceGroup(appRgName) : resourceGroup(dataRgName)
   name: makeMistake ? workingStorageAccountName : dataStorageAccountName
 }
 
 module roleAssignmentLogicAppQueueStorageDataContributor 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.0' = {
   name: guid(storageAccount.id, logicAppName, roleAssignmentMappings['Storage Queue Data Contributor'])
+  scope: resourceGroup(split(storageAccount.id, '/')[4])
   params: {
     principalId: logicApp.outputs.logicAppSystemAssignedIdentityPrincipalId
     resourceId: storageAccount.id

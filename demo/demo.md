@@ -14,7 +14,7 @@ These deployments are split into 3, as there are 3 separate lifecycles.
 # 2. Bicep overview
 There are 3 main.biceps to deploy each of the 3 components which have a separate lifecycle.
 1. [Data StorageAccount (with Queue)](../src/bicep/resourceGroup/infra-storage.main.bicep)
-2. [LogicApp Standard](../src/bicep/resourceGroup/infra-logicapp.main.bicep)
+2. [LogicApp Standard](../src/bicep/resourceGroup/infra-application.main.bicep)
 3. [LogicApp Standard AppSettings](../src/bicep/resourceGroup/application.bicep)
 
 Next to this, for demo purposes the names of all the resources deployed is located in [a shared resourceNames file](../src/bicep/resourceGroup/resourceNames.bicep).
@@ -100,7 +100,7 @@ Or to scope to **subscription**:
 ```powershell
                   az stack sub create 
                     --name <stackname>
-                    --resource-group <rg-name>
+                    --location <location>
                     --template-file <path>
                     --parameters <path>
                     --action-on-unmanage <DeleteAll/DeleteResouces/DetachAll>
@@ -162,3 +162,59 @@ az stack group create `
 
 
 We can then navigate to the Azure portal to the resourceGroup, and go to "Deployment Stacks" to view and manage the deployment stacks.
+
+The [LogicApp Standard bicep](../src/bicep/resourceGroup/infra-application.main.bicep) has a switch to change roleAssignments between working & data storage account to simulate the state management deployment stacks provide.
+
+
+
+
+# 6. Deploy resources using deployment stack at subscription level
+
+This is the same excercise as in 5, except on subscription level.
+The templates are mostly the same, but now 2 resourceGroups have been defined in the naming bicep, one for the data and one for the application.
+
+The biceps have been modified to set targetScope = 'subscription' and adjust the deployments' scopes accordingly.
+
+## Set variables
+```powershell
+$tenantId = "c8feaf08-21fc-4dc8-b637-bfd091677a97"
+$subscriptionId = "61d748b8-2dcc-4406-ae38-17ccb641b188"
+
+$location = 'westeurope'
+$dataStackName = 'anmo-data-stack'
+$logicAppStackName = 'anmo-logicapp-stack'
+$logicAppAppSettingsStackName = 'anmo-logicapp-appsettings-stack'
+```
+
+## Login
+```powershell
+az login --tenant $tenantId
+az account set --subscription $subscriptionId
+```
+
+# Deploy resources using stacks at subscription level
+```powershell
+az stack sub create `
+                    --name $dataStackName `
+                    --location $location `
+                    --template-file "../src/bicep/subscription/infra-storage.main.bicep" `
+                    --action-on-unmanage 'DeleteAll' `
+                    --deny-settings-mode 'none'
+
+
+az stack sub create `
+                    --name $logicAppStackName `
+                    --location $location `
+                    --template-file "../src/bicep/subscription/infra-application.main.bicep" `
+                    --action-on-unmanage 'DeleteAll' `
+                    --deny-settings-mode 'none'
+
+az stack sub create `
+                    --name $logicAppAppSettingsStackName `
+                    --location $location `
+                    --template-file "../src/bicep/subscription/application.bicep" `
+                    --action-on-unmanage 'DeleteAll' `
+                    --deny-settings-mode 'none'
+```
+
+
