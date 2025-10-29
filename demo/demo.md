@@ -107,7 +107,17 @@ Or to scope to **subscription**:
                     --deny-settings-mode <none/denyDelete/denyWriteAndDelete>
 ```
 
-
+Or to scope to **management group**:
+```powershell
+                  az stack mg create 
+                    --name <stackname>
+                    --location <location>
+                    --template-file <path>
+                    --parameters <path>
+                    --deployment-subscription <subscriptionId>
+                    --action-on-unmanage <DeleteAll/DeleteResouces/DetachAll>
+                    --deny-settings-mode <none/denyDelete/denyWriteAndDelete>
+```
 
 
 # 5. Deploy resources using deployment stack at resourceGroup level
