@@ -27,7 +27,6 @@ param location string = 'westeurope'
 
 targetScope = 'subscription'
 
-
 module appRg 'br/public:avm/res/resources/resource-group:0.4.1' = {
   name: appRgName
   params: {

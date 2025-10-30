@@ -35,9 +35,7 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.27.1' = {
 var queueEndpoint = storageAccount.outputs.serviceEndpoints.queue
 var normalizedQueueEndpoint = endsWith(queueEndpoint, '/') ? queueEndpoint : '${queueEndpoint}/'
 
-@description('The name of the deployed storage account.')
 output storageAccountName string = storageAccount.outputs.name
-@description('Primary endpoint for queue service.')
+output queueName string = queueName
 output queueServiceEndpoint string = queueEndpoint
-@description('Full URL of the created queue.')
 output queueUrl string = '${normalizedQueueEndpoint}${queueName}'

@@ -41,3 +41,6 @@ module storageAccount '../modules/storage.bicep' = {
   }
 }
 
+
+output storageAccountName string = storageAccount.outputs.storageAccountName
+output queueName string = storageAccount.outputs.queueName
