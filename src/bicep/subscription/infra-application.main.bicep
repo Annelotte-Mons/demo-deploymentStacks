@@ -88,7 +88,7 @@ module logicApp '../modules/logicapp-standard.bicep' = {
 
 // Swap to fix "mistakenly" using the working storage account instead of the shared data storage account
 // To showcase the advantage of deployment stacks
-var makeMistake = false
+var makeMistake = true
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   scope: makeMistake ? resourceGroup(appRgName) : resourceGroup(dataRgName)
