@@ -30,9 +30,9 @@ In this chapter, we will first deploy the biceps without using deployment stacks
 
 ## Set variables
 ```powershell
-$tenantId = "c8feaf08-21fc-4dc8-b637-bfd091677a97"
-$subscriptionId = "61d748b8-2dcc-4406-ae38-17ccb641b188"
-$rg = "anmo-nostack-demo"
+$tenantId = "<tenantId>"
+$subscriptionId = "<subsId>"
+$rg = "my-awesome-rg"
 $loc = "westeurope"
 ```
 
@@ -124,14 +124,14 @@ Or to scope to **management group**:
 
 ## Set variables
 ```powershell
-$tenantId = "c8feaf08-21fc-4dc8-b637-bfd091677a97"
-$subscriptionId = "61d748b8-2dcc-4406-ae38-17ccb641b188"
-$rg = "anmo-stack-rg-demo"
+$tenantId = "<tenantId>"
+$subscriptionId = "<subsId>"
+$rg = "my-awesome-rg"
 $loc = "westeurope"
 
-$dataStackName = 'anmo-data-stack'
-$logicAppStackName = 'anmo-logicapp-stack'
-$logicAppAppSettingsStackName = 'anmo-logicapp-appsettings-stack'
+$dataStackName = 'data-stack'
+$logicAppStackName = 'logicapp-stack'
+$logicAppAppSettingsStackName = 'logicapp-appsettings-stack'
 ```
 
 ## Login
@@ -187,13 +187,13 @@ The biceps have been modified to set targetScope = 'subscription' and adjust the
 
 ## Set variables
 ```powershell
-$tenantId = "c8feaf08-21fc-4dc8-b637-bfd091677a97"
-$subscriptionId = "61d748b8-2dcc-4406-ae38-17ccb641b188"
+$tenantId = "<tenantId>"
+$subscriptionId = "<subsId>"
+$loc = "westeurope"
 
-$location = 'westeurope'
-$dataStackName = 'anmo-data-stack'
-$logicAppStackName = 'anmo-logicapp-stack'
-$logicAppAppSettingsStackName = 'anmo-logicapp-appsettings-stack'
+$dataStackName = 'data-stack'
+$logicAppStackName = 'logicapp-stack'
+$logicAppAppSettingsStackName = 'logicapp-appsettings-stack'
 ```
 
 ## Login
@@ -226,5 +226,3 @@ az stack sub create `
                     --action-on-unmanage 'DeleteAll' `
                     --deny-settings-mode 'none'
 ```
-
-

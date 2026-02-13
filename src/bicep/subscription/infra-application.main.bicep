@@ -88,7 +88,13 @@ module logicApp '../modules/logicapp-standard.bicep' = {
 
 // Swap to fix "mistakenly" using the working storage account instead of the shared data storage account
 // To showcase the advantage of deployment stacks
-var makeMistake = true
+var makeMistake = false
+
+// Helper dict for role assignments
+var roleAssignmentMappings = {
+  'Storage Queue Data Contributor': '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+}
+
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   scope: makeMistake ? resourceGroup(appRgName) : resourceGroup(dataRgName)
@@ -96,7 +102,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing 
 }
 
 module roleAssignmentLogicAppQueueStorageDataContributor 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.0' = {
-  name: guid(storageAccount.id, logicAppName, roleAssignmentMappings['Storage Queue Data Contributor'])
+  name: 'RoleAssignmentOfInterest-${storageAccount.name}'
   scope: resourceGroup(split(storageAccount.id, '/')[4])
   params: {
     principalId: logicApp.outputs.logicAppSystemAssignedIdentityPrincipalId
@@ -107,7 +113,4 @@ module roleAssignmentLogicAppQueueStorageDataContributor 'br/public:avm/ptn/auth
   }
 }
 
-// Helper dict for role assignments
-var roleAssignmentMappings = {
-  'Storage Queue Data Contributor': '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
-}
+
